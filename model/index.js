@@ -1,63 +1,35 @@
-const fs = require('fs/promises')
-const path = require('path')
-
-const contactsPath = path.join(__dirname, 'contacts.json')
+const ContactModel = require('./shemas/contact')
 
 const listContacts = async () => {
-  const data = await fs.readFile(contactsPath)
+  const contacts = await ContactModel.find()
 
-  return JSON.parse(data.toString())
+  return contacts
 }
 
 const getContactById = async contactId => {
-  const data = await fs.readFile(contactsPath)
+  const contact = await ContactModel.findById(contactId)
 
-  return JSON.parse(data.toString()).find(({ id }) => id === contactId)
+  return contact
 }
 
 const removeContact = async contactId => {
-  const data = await fs.readFile(contactsPath)
-  const contacts = JSON.parse(data.toString())
-  const updatedContacts = contacts.filter(({ id }) => id !== contactId)
+  const contact = await ContactModel.findByIdAndDelete(contactId)
 
-  if (updatedContacts.length === contacts.length) return false
-
-  await fs.writeFile(contactsPath, JSON.stringify(updatedContacts, null, '\t'))
-  return true
+  return contact
 }
 
 const addContact = async body => {
-  const data = await fs.readFile(contactsPath)
-  const contacts = JSON.parse(data.toString())
-  const id = contacts[contacts.length - 1].id + 1
+  const contact = await ContactModel.create({ ...body })
 
-  const newContact = { id, ...body }
-  contacts.push(newContact)
-
-  await fs.writeFile(contactsPath, JSON.stringify(contacts, null, '\t'))
-
-  return newContact
+  return contact
 }
 
 const updateContact = async (contactId, body) => {
-  const data = await fs.readFile(contactsPath)
-  const contacts = JSON.parse(data.toString())
-
-  const updatedContacts = contacts.map(contact => {
-    if (contact.id === contactId) {
-      return { ...contact, ...body }
-    }
-    return contact
+  const contact = await ContactModel.findByIdAndUpdate(contactId, body, {
+    new: true
   })
-  const newContact = updatedContacts.find(({ id }) => id === contactId)
-  if (newContact) {
-    await fs.writeFile(
-      contactsPath,
-      JSON.stringify(updatedContacts, null, '\t')
-    )
-    return newContact
-  }
-  return null
+
+  return contact
 }
 
 module.exports = {
