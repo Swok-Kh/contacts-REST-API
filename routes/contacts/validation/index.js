@@ -11,6 +11,12 @@ const createContactSchema = Joi.object({
   favorite: Joi.boolean().required()
 })
 
+const queryContactSchema = Joi.object({
+  favorite: Joi.boolean().optional(),
+  page: Joi.number().min(1).max(100).optional(),
+  limit: Joi.number().min(10).max(100).optional()
+})
+
 const updateContactSchema = Joi.object({
   name: Joi.string().alphanum().min(2).max(30),
   email: Joi.string().email(),
@@ -44,9 +50,14 @@ const validateContactId = (req, res, next) => {
   next()
 }
 
+const validateQueryContacts = (req, res, next) => {
+  validate(queryContactSchema, req.query, next)
+}
+
 module.exports = {
   validateCreateContact,
   validateUpdateContact,
   validateUpdateContactFavorite,
-  validateContactId
+  validateContactId,
+  validateQueryContacts
 }

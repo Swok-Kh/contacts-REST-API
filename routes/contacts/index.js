@@ -12,12 +12,13 @@ const {
   validateCreateContact,
   validateUpdateContact,
   validateUpdateContactFavorite,
-  validateContactId
+  validateContactId,
+  validateQueryContacts
 } = require('./validation')
 const guard = require('../../helpers/guard')
 
 router
-  .get('/', guard, getAllContacts)
+  .get('/', guard, validateQueryContacts, getAllContacts)
   .post('/', guard, validateCreateContact, addOneContact)
 
 router

@@ -1,8 +1,8 @@
 const { Schema, model } = require('mongoose')
 const bcrypt = require('bcryptjs')
 const { subscription } = require('../../helpers/constants')
-
-const SALT_FACTOR = 6
+require('dotenv').config()
+const SALT_FACTOR = process.env.SALT_FACTOR
 
 const userSchema = new Schema(
   {

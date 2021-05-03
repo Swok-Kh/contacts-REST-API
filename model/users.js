@@ -12,4 +12,19 @@ const create = async userOptions => {
 const updateToken = async (id, token) =>
   await User.findByIdAndUpdate(id, { token })
 
-module.exports = { findById, findByEmail, create, updateToken }
+const updateSubscription = async (id, subscription) =>
+  await User.findByIdAndUpdate(
+    id,
+    { subscription },
+    {
+      new: true
+    }
+  )
+
+module.exports = {
+  findById,
+  findByEmail,
+  create,
+  updateToken,
+  updateSubscription
+}

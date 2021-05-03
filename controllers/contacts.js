@@ -3,7 +3,8 @@ const { httpCodes } = require('../helpers/constants')
 
 const getAllContacts = async (req, res, next) => {
   try {
-    const contacts = await contactsModel.getAll()
+    const userId = req.user?._id
+    const contacts = await contactsModel.getAll(userId, req.query)
     res.status(httpCodes.OK).json({
       status: 'success',
       code: httpCodes.OK,
@@ -17,7 +18,8 @@ const getAllContacts = async (req, res, next) => {
 const getOneContactById = async (req, res, next) => {
   try {
     const { contactId } = req.params
-    const contact = await contactsModel.getOneById(contactId)
+    const userId = req.user?._id
+    const contact = await contactsModel.getOneById(userId, contactId)
     if (contact) {
       res.status(httpCodes.OK).json({
         status: 'success',
@@ -39,7 +41,8 @@ const getOneContactById = async (req, res, next) => {
 const addOneContact = async (req, res, next) => {
   try {
     const { body } = req
-    const contact = await contactsModel.addOne(body)
+    const userId = req.user?._id
+    const contact = await contactsModel.addOne(userId, body)
     res.status(httpCodes.CREATED).json({
       status: 'success',
       code: httpCodes.CREATED,
@@ -53,7 +56,8 @@ const addOneContact = async (req, res, next) => {
 const removeOneContactById = async (req, res, next) => {
   try {
     const { contactId } = req.params
-    const contact = await contactsModel.removeOneById(contactId)
+    const userId = req.user?._id
+    const contact = await contactsModel.removeOneById(userId, contactId)
 
     if (contact) {
       res.status(httpCodes.OK).json({
@@ -80,8 +84,8 @@ const updateOneContact = async (req, res, next) => {
       params: { contactId },
       body
     } = req
-
-    const contact = await contactsModel.updateOne(contactId, body)
+    const userId = req.user?._id
+    const contact = await contactsModel.updateOne(userId, contactId, body)
     if (contact) {
       res.status(httpCodes.OK).json({
         status: 'success',
@@ -106,8 +110,8 @@ const updateContactFavorite = async (req, res, next) => {
       params: { contactId },
       body
     } = req
-
-    const contact = await contactsModel.updateOne(contactId, body)
+    const userId = req.user?._id
+    const contact = await contactsModel.updateOne(userId, contactId, body)
     if (contact) {
       res.status(httpCodes.OK).json({
         status: 'success',

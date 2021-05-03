@@ -82,4 +82,28 @@ const getCurrentUser = async (req, res, next) => {
   }
 }
 
-module.exports = { signupUser, loginUser, logoutUser, getCurrentUser }
+const updateSubscriptionUser = async (req, res, next) => {
+  try {
+    const {
+      user: { _id },
+      body: { subscription }
+    } = req
+
+    const user = await usersModel.updateSubscription(_id, subscription)
+    return res.status(httpCodes.OK).json({
+      status: 'success',
+      code: httpCodes.OK,
+      data: { email: user.email, subscription: user.subscription }
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+module.exports = {
+  signupUser,
+  loginUser,
+  logoutUser,
+  getCurrentUser,
+  updateSubscriptionUser
+}
