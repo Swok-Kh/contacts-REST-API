@@ -1,7 +1,8 @@
 const Joi = require('joi')
 const mongoose = require('mongoose')
+const validate = require('../../../helpers/validate')
 
-const createContactShema = Joi.object({
+const createContactSchema = Joi.object({
   name: Joi.string().alphanum().min(2).max(30).required(),
   email: Joi.string().email().required(),
   phone: Joi.string()
@@ -10,7 +11,7 @@ const createContactShema = Joi.object({
   favorite: Joi.boolean().required()
 })
 
-const updateContactShema = Joi.object({
+const updateContactSchema = Joi.object({
   name: Joi.string().alphanum().min(2).max(30),
   email: Joi.string().email(),
   phone: Joi.string().pattern(
@@ -20,32 +21,23 @@ const updateContactShema = Joi.object({
   favorite: Joi.boolean()
 }).or('name', 'email', 'phone', 'favorite')
 
-const updateContactFavoriteShema = Joi.object({
+const updateContactFavoriteSchema = Joi.object({
   favorite: Joi.boolean().required()
 })
 
-const validate = async (shema, value, next) => {
-  try {
-    await shema.validateAsync(value)
-    next()
-  } catch (error) {
-    next({ code: 400, message: error.message.replace(/"/g, "'") })
-  }
-}
-
 const validateCreateContact = (req, res, next) => {
-  validate(createContactShema, req.body, next)
+  validate(createContactSchema, req.body, next)
 }
 
 const validateUpdateContact = (req, res, next) => {
-  validate(updateContactShema, req.body, next)
+  validate(updateContactSchema, req.body, next)
 }
 
 const validateUpdateContactFavorite = (req, res, next) => {
-  validate(updateContactFavoriteShema, req.body, next)
+  validate(updateContactFavoriteSchema, req.body, next)
 }
 
-const validateContqactId = (req, res, next) => {
+const validateContactId = (req, res, next) => {
   if (!mongoose.isValidObjectId(req.params.contactId)) {
     return next({ code: 400, message: 'Invalid ID' })
   }
@@ -56,5 +48,5 @@ module.exports = {
   validateCreateContact,
   validateUpdateContact,
   validateUpdateContactFavorite,
-  validateContqactId
+  validateContactId
 }

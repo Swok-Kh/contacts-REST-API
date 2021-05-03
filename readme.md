@@ -1,6 +1,45 @@
 ## Contacts REST-API
 
-### Endpoints
+### _Endpoints_
+
+### Users
+
+- POST **/users/signup** - user signUp, required body:
+
+  ```
+  {
+    "email": String!,
+    "password": String!
+    "subscription": String // one of 'starter', 'pro', 'business'
+  }
+  ```
+
+- POST **/users/login** - user login, required body:
+
+  ```
+  {
+    "email": String!,
+    "password": String!
+  }
+  ```
+
+- POST **/users/logout** - user login, required headers:
+
+  ```
+  {
+    "Authorization": token
+  }
+  ```
+
+- GET **/users/current** - user login, required headers:
+
+  ```
+  {
+    "Authorization": token
+  }
+  ```
+
+### Contacts
 
 - GET **api/contacts** - get all contacts
 - GET **api/contacts/:contactId** - get one contact by id
@@ -31,7 +70,7 @@
   }
   ```
 
-### Команды:
+### Scripts:
 
 - `npm start` &mdash; start in production mode
 - `npm run start:dev` &mdash; start in development mode
