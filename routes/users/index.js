@@ -1,23 +1,27 @@
 const express = require('express')
 const router = express.Router()
+const upload = require('../../helpers/upload-avatars')
+
 const {
   signupUser,
   loginUser,
   logoutUser,
   getCurrentUser,
-  updateSubscriptionUser
+  updateUserSubscription,
+  updateUserAvatar
 } = require('../../controllers/users')
 const {
   validateSignupUser,
   validateLoginUser,
-  validateUpdateSubscriptionUser
+  validateUpdateUserSubscription
 } = require('./validation')
 const guard = require('../../helpers/guard')
 
-router.patch('/', guard, validateUpdateSubscriptionUser, updateSubscriptionUser)
+router.patch('/', guard, validateUpdateUserSubscription, updateUserSubscription)
 router.post('/signup', validateSignupUser, signupUser)
 router.post('/login', validateLoginUser, loginUser)
 router.post('/logout', guard, logoutUser)
 router.get('/current', guard, getCurrentUser)
+router.patch('/avatars', guard, upload.single('avatar'), updateUserAvatar)
 
 module.exports = router

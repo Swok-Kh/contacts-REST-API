@@ -4,6 +4,7 @@ const cors = require('cors')
 const helmet = require('helmet')
 const rateLimit = require('express-rate-limit')
 const boolParser = require('express-query-boolean')
+const multer = require('multer')
 const contactsRouter = require('./routes/contacts')
 const usersRouter = require('./routes/users')
 const { httpCodes } = require('./helpers/constants')
@@ -25,9 +26,10 @@ const limiter = rateLimit({
 
 app.use(helmet())
 app.use(logger(formatsLogger))
+app.use(express.static('public'))
 app.use(limiter)
 app.use(cors())
-app.use(express.json())
+app.use(express.json({ limit: 150000 }))
 app.use(boolParser())
 
 app.use('/users', usersRouter)
@@ -42,10 +44,17 @@ app.use((req, res) => {
 })
 
 app.use((err, req, res, next) => {
-  const code = err.code || httpCodes.INTERNAL_ERROR
+  let code
+
+  if (err instanceof multer.MulterError) {
+    code = httpCodes.BAD_REQUEST
+  } else {
+    code = err.code || httpCodes.INTERNAL_ERROR
+  }
+
   res.status(code).json({
     status: code === httpCodes.INTERNAL_ERROR ? 'fail' : 'error',
-    code: code,
+    code,
     message:
       process.env.NODE_ENV === 'development'
         ? err.message
