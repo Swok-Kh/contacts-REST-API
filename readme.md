@@ -47,6 +47,16 @@
   }
   ```
 
+- PATCH **/users/avatars** - user avatar update, required body - form-data with
+  key _avatar_:
+
+  ```
+  form-data
+  {
+    "avatar": file!, // up to 150Kb
+  }
+  ```
+
 ### Contacts
 
 - GET **api/contacts** - get contacts. Supports pagination and filter by

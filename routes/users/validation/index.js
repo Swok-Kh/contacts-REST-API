@@ -27,11 +27,11 @@ const validateLoginUser = (req, res, next) => {
   validate(loginUserSchema, req.body, next)
 }
 
-const validateUpdateSubscriptionUser = (req, res, next) => {
+const validateUpdateUserSubscription = (req, res, next) => {
   validate(updateSubscriptionUser, req.body, next)
 }
 module.exports = {
   validateSignupUser,
   validateLoginUser,
-  validateUpdateSubscriptionUser
+  validateUpdateUserSubscription
 }
