@@ -8,7 +8,8 @@ const {
   logoutUser,
   getCurrentUser,
   updateUserSubscription,
-  updateUserAvatar
+  updateUserAvatar,
+  verifyUserEmail
 } = require('../../controllers/users')
 const {
   validateSignupUser,
@@ -23,5 +24,6 @@ router.post('/login', validateLoginUser, loginUser)
 router.post('/logout', guard, logoutUser)
 router.get('/current', guard, getCurrentUser)
 router.patch('/avatars', guard, upload.single('avatar'), updateUserAvatar)
+router.get('/verify/:verificationToken', verifyUserEmail)
 
 module.exports = router

@@ -2,11 +2,22 @@ const fs = require('fs/promises')
 const path = require('path')
 const jwt = require('jsonwebtoken')
 const jimp = require('jimp')
+const nodemailer = require('nodemailer')
+const { v4: uuidv4 } = require('uuid')
 const usersModel = require('../model/users')
 const { httpCodes } = require('../helpers/constants')
 
 require('dotenv').config()
 const { JWT_SECRET_KEY } = process.env
+
+const transporter = nodemailer.createTransport({
+  host: 'smtp.ethereal.email',
+  port: 587,
+  auth: {
+    user: 'marjolaine1@ethereal.email',
+    pass: '74BQ332aEF9kzNmkSm'
+  }
+})
 
 const signupUser = async (req, res, next) => {
   try {
@@ -19,7 +30,21 @@ const signupUser = async (req, res, next) => {
         message: 'Email is already use'
       })
     }
-    const { email, subscription, avatarURL } = await usersModel.create(req.body)
+    const verifyToken = uuidv4()
+
+    const { email, subscription, avatarURL } = await usersModel.create({
+      ...req.body,
+      verifyToken
+    })
+
+    await transporter.sendMail({
+      from: '<no-reply@ethereal.email>',
+      to: checkedEmail,
+      subject: 'Email verification',
+      text: 'Email verification',
+      html: `<b>Email verification:</b><a href='http://localhost/users/verify/${verifyToken}'>verify your email</>`
+    })
+
     return res.status(httpCodes.CREATED).json({
       status: 'created',
       code: httpCodes.CREATED,
@@ -34,6 +59,13 @@ const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body
     const user = await usersModel.findByEmail(email)
+    if (!user.verify) {
+      return res.status(httpCodes.BAD_REQUEST).json({
+        status: 'error',
+        code: httpCodes.BAD_REQUEST,
+        message: 'Email not verified'
+      })
+    }
     const isValidPassword = await user?.validatePassword(password)
     if (!user || !isValidPassword) {
       return res.status(httpCodes.UNAUTHORIZED).json({
@@ -60,6 +92,36 @@ const loginUser = async (req, res, next) => {
   } catch (error) {
     next(error)
   }
+}
+
+const verifyUserEmail = async (req, res, next) => {
+  const { verificationToken } = req.params
+
+  if (!verificationToken) {
+    return res.status(httpCodes.BAD_REQUEST).json({
+      status: 'error',
+      code: httpCodes.BAD_REQUEST,
+      message: 'No verification token'
+    })
+  }
+
+  const user = await usersModel.findByVerifyToken(verificationToken)
+
+  if (!user) {
+    return res.status(httpCodes.NOT_FOUND).json({
+      status: 'error',
+      code: httpCodes.NOT_FOUND,
+      message: 'User not found'
+    })
+  }
+
+  await usersModel.setVerify(user._id)
+
+  return res.status(httpCodes.OK).json({
+    status: 'success',
+    code: httpCodes.OK,
+    message: 'Verification successful'
+  })
 }
 
 const logoutUser = async (req, res, next) => {
@@ -164,5 +226,6 @@ module.exports = {
   logoutUser,
   getCurrentUser,
   updateUserSubscription,
-  updateUserAvatar
+  updateUserAvatar,
+  verifyUserEmail
 }
