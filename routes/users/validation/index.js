@@ -19,6 +19,8 @@ const updateSubscriptionUser = Joi.object({
     .required()
 })
 
+const emailUserSchema = Joi.object({ email: Joi.string().email().required() })
+
 const validateSignupUser = (req, res, next) => {
   validate(signupUserSchema, req.body, next)
 }
@@ -30,8 +32,14 @@ const validateLoginUser = (req, res, next) => {
 const validateUpdateUserSubscription = (req, res, next) => {
   validate(updateSubscriptionUser, req.body, next)
 }
+
+const validateEmailUser = (req, res, next) => {
+  validate(emailUserSchema, req.body, next)
+}
+
 module.exports = {
   validateSignupUser,
   validateLoginUser,
-  validateUpdateUserSubscription
+  validateUpdateUserSubscription,
+  validateEmailUser
 }

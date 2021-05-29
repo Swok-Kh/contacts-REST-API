@@ -8,12 +8,15 @@ const {
   logoutUser,
   getCurrentUser,
   updateUserSubscription,
-  updateUserAvatar
+  updateUserAvatar,
+  verifyUserEmail,
+  resendVerifyEmail
 } = require('../../controllers/users')
 const {
   validateSignupUser,
   validateLoginUser,
-  validateUpdateUserSubscription
+  validateUpdateUserSubscription,
+  validateEmailUser
 } = require('./validation')
 const guard = require('../../helpers/guard')
 
@@ -23,5 +26,7 @@ router.post('/login', validateLoginUser, loginUser)
 router.post('/logout', guard, logoutUser)
 router.get('/current', guard, getCurrentUser)
 router.patch('/avatars', guard, upload.single('avatar'), updateUserAvatar)
+router.get('/verify/:verificationToken', verifyUserEmail)
+router.post('/verify/', validateEmailUser, resendVerifyEmail)
 
 module.exports = router

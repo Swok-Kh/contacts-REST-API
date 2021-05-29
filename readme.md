@@ -14,6 +14,17 @@
   }
   ```
 
+  After registration, the user will receive an email with a link to confirm the
+  email.
+
+- POST **/users/verify/** - resend verification email, required body:
+
+  ```
+  {
+    "email": String!,
+  }
+  ```
+
 - POST **/users/login** - user login, required body:
 
   ```
